@@ -17,12 +17,13 @@
 # frozen_string_literal: true
 
 require 'local/version'
+require 'local/logger'
 
 # Entrypoint of the program
 module Local
   class Error < StandardError; end
 
   def self.main
-    puts 'Hello, world!'
+    LocalLogger.info('Hello, world!')
   end
 end
