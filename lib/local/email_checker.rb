@@ -20,7 +20,7 @@
 module EmailChecker
   EMAIL_PATTERN = /\A([\w+-].?)+@[a-z\d-]+(\.[a-z]+)*\.[a-z]+\z/i
 
-  def self.valid?(email)
+  def valid?(email)
     EMAIL_PATTERN.match?(email)
   end
 end

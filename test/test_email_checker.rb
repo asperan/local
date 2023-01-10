@@ -20,13 +20,21 @@ require 'test_helper'
 require 'local/email_checker'
 
 class TestEmailChecker < Minitest::Test
+  class TestedClass
+    include EmailChecker
+  end
+
+  def setup
+    @test_class = TestedClass.new
+  end
+
   def test_normal_address
     address = 'alex.speranza@studio.unibo.it'
-    assert EmailChecker.valid?(address)
+    assert @test_class.valid?(address)
   end
 
   def test_not_an_address
     not_an_address = 'test123'
-    refute EmailChecker.valid?(not_an_address)
+    refute @test_class.valid?(not_an_address)
   end
 end
