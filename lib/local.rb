@@ -18,12 +18,13 @@
 
 require 'local/version'
 require 'local/logger'
+require 'local/configuration/configuration'
 
 # Entrypoint of the program
 module Local
   class Error < StandardError; end
 
   def self.main
-    LocalLogger.info('Hello, world!')
+    Configuration.load
   end
 end
