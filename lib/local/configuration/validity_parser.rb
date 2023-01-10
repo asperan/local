@@ -18,11 +18,10 @@
 
 # Module to check validity strings.
 module ValidityParser
-    VALIDITY_PATTERN = /(\d+) (d(ays)?)/
+  VALIDITY_PATTERN = /(\d+) (d(ays)?)/
 
-    # Returns the number of days if the validity string is well-formed, else nil.
-    def accept_validity(str)
-        VALIDITY_PATTERN.match(str)
-    end
+  # Returns the number of days if the validity string is well-formed, else nil.
+  def accept_validity(str)
+    VALIDITY_PATTERN.match(str)
   end
-  
+end
