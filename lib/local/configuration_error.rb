@@ -19,6 +19,6 @@
 # Error risen when a wrong configuration field value is parsed.
 class ConfigurationError < RuntimeError
   def initialize(field, given_value, message = nil)
-    super("ConfigurationError: field '#{field} set to invalid value '#{given_value}'. #{message.nil? ? '' : message}")
+    super("ConfigurationError: field '#{field}' set to invalid value '#{given_value}'. #{message.nil? ? '' : message}")
   end
 end
