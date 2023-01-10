@@ -17,7 +17,7 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'local/email_checker'
+require 'local/configuration/email_checker'
 
 class TestEmailChecker < Minitest::Test
   class TestedClass

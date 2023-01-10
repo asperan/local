@@ -17,8 +17,8 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'local/duration'
-require 'local/configuration_error'
+require 'local/configuration/duration'
+require 'local/configuration/configuration_error'
 
 class TestDuration < Minitest::Test
   def test_duration_in_seconds
