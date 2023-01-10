@@ -34,6 +34,7 @@ module Configuration
 
   # The configuration starts with some default values
   @@configuration = {
+    base_folder: '/data',
     use_subfolders: true,
     sleep_time: DEFAULT_SLEEP_DURATION,
     check_mode: CheckMode::SERIAL,
@@ -106,6 +107,11 @@ module Configuration
       }.freeze
 
       @field_manager = [
+        {
+          field_name: :base_folder,
+          extractor: @extractors[:identity],
+          check: @checks[:always_accept],
+        },
         {
           field_name: :use_subfolders,
           extractor: @extractors[:identity],
