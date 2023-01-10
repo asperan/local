@@ -30,11 +30,11 @@ class TestEmailChecker < Minitest::Test
 
   def test_normal_address
     address = 'alex.speranza@studio.unibo.it'
-    assert @test_class.valid?(address)
+    assert @test_class.accept_email?(address)
   end
 
   def test_not_an_address
     not_an_address = 'test123'
-    refute @test_class.valid?(not_an_address)
+    refute @test_class.accept_email?(not_an_address)
   end
 end
