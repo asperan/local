@@ -72,9 +72,12 @@ class CertificateManager
     return false unless File.exist?(certificate)
 
     current_date = `date +%s`.strip.to_i
-    # TODO: Line below is too long
-    expiration_date = `date -d "$(openssl x509 -noout -text -in #{certificate} | grep 'Not After' | cut -d ':' -f 2-)" +%s`.strip.to_i
+    expiration_date = `date -d "#{certificate_expiration_date}" +%s`.strip.to_i
     current_date < expiration_date
+  end
+
+  def certificate_expiration_date
+    `openssl x509 -noout -text -in #{certificate} | grep 'Not After' | cut -d ':' -f 2-`.strip
   end
 
   def create_certificate_signing_request
