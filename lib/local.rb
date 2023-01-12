@@ -19,6 +19,7 @@
 require 'local/version'
 require 'local/logger'
 require 'local/configuration/configuration'
+require 'local/certificate/certificate_manager'
 
 # Entrypoint of the program
 module Local
@@ -26,5 +27,47 @@ module Local
 
   def self.main
     Configuration.load
+    @@configuration = Configuration.get
+    cycle
+  end
+
+  CA_NAME = 'ca'
+
+  def self.cycle
+    ca_man = CertificateManager.new(directory_path(CA_NAME), CA_NAME, @@configuration[:ca_configuration])
+    ca_paths = { key: ca_man.private_key, crt: ca_man.certificate }
+    certificate_managers = @@configuration[:certificate_configurations].map do |element|
+      expanded_cn = expand_cn(element[:common_name])
+      CertificateManager.new(directory_path(expanded_cn), expanded_cn, element, ca_paths)
+    end
+
+    # TODO: add logger messages
+    loop do
+      ca_man.check_certificate
+      # TODO: use check_mode
+      certificate_managers.each(&:check_certificate)
+      # TODO: fix `Interrupt` error in ctrl-c
+      sleep @@configuration[:sleep_time].seconds
+    end
+  end
+
+  def self.directory_path(expanded_cn)
+    "#{@@configuration[:base_folder]}/certificates" \
+      "#{@@configuration[:use_subfolders] ? "/#{before_first_dot(expanded_cn)}" : ''}"
+  end
+
+  def self.before_first_dot(str)
+    first_dot_index = str.index('.')
+    return str if first_dot_index.nil?
+
+    str[0, first_dot_index]
+  end
+
+  def self.expand_cn(common_name)
+    if common_name.start_with?('*')
+      common_name.sub('*', 'wildcard')
+    else
+      common_name
+    end
   end
 end
