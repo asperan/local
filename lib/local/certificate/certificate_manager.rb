@@ -20,18 +20,19 @@ require 'fileutils'
 require 'local/logger'
 
 # This class check the validity of a certificate, given a configuration.
+# The Cop ClassLength is disabled because to keep short the lines, I must create new lines.
+# rubocop:disable Metrics/ClassLength
 class CertificateManager
-  # TODO: add toggle for certificate self-signed or CA-signed
-  def initialize(directory_path, name, certificate_configuration)
+  # ca_paths, if not nil, must be an hash with 2 symbols: `key` and `crt`. If ca_paths is nil, assume the certificate is self-signed.
+  def initialize(directory_path, name, certificate_configuration, ca_paths = nil)
     FileUtils.mkdir_p directory_path
     @base_name = File.expand_path("#{directory_path}/#{name}")
     @certificate_configuration = certificate_configuration
-    # @self_sign = self_sign
+    @ca_paths = ca_paths
   end
 
   def check_certificate
     generate_key unless key_exist?
-
     if certificate_valid?
       LocalLogger.info "Certificate '#{certificate}' is still valid. Nothing to be done."
     else
@@ -46,13 +47,15 @@ class CertificateManager
     end
   end
 
-  private
-
   def private_key = "#{@base_name}.key"
+
+  def certificate = "#{@base_name}.crt"
+
+  private
 
   def csr = "#{@base_name}.csr"
 
-  def certificate = "#{@base_name}.crt"
+  def ca_sign_options = "-CA #{@ca_paths[:crt]} -CAkey #{@ca_paths[:key]} -CAcreateserial"
 
   def key_exist?
     File.exist?(private_key)
@@ -97,7 +100,6 @@ class CertificateManager
   end
 
   def extract_certificate_signing_request
-    # TODO: study how a CA-signed certificate csr extraction works
     command_string = "openssl x509 -x509toreq -in '#{certificate}' -signkey '#{private_key}' -out '#{csr}'"
     exec_system_command(
       command_string,
@@ -107,9 +109,15 @@ class CertificateManager
   end
 
   def create_certificate
-    # TODO: Line below is too long.
-    # TODO: Divide self-signing and CA signing
-    command_string = "openssl x509 -req -days '#{@certificate_configuration[:valid_for]}' -in '#{csr}' -signkey '#{private_key}' -out '#{certificate}'"
+    sign_options = if @ca_paths.nil?
+                     "-signkey '#{private_key}'"
+                   else
+                     ca_sign_options
+                   end
+    command_string = 'openssl x509 -req ' \
+                     "-days '#{@certificate_configuration[:valid_for]}' " \
+                     "-in '#{csr}' #{sign_options}' " \
+                     "-out '#{certificate}'"
     exec_system_command(
       command_string,
       "Certificate '#{certificate}' renewed.",
@@ -138,3 +146,4 @@ class CertificateManager
     end
   end
 end
+# rubocop:enable Metrics/ClassLength
