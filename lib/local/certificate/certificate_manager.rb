@@ -117,7 +117,7 @@ class CertificateManager
                    end
     command_string = 'openssl x509 -req ' \
                      "-days '#{@certificate_configuration[:valid_for]}' " \
-                     "-in '#{csr}' #{sign_options}' " \
+                     "-in '#{csr}' #{sign_options} " \
                      "-out '#{certificate}'"
     exec_system_command(
       command_string,
