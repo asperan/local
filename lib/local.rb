@@ -27,6 +27,7 @@ module Local
 
   def self.main
     Configuration.load
+    LocalLogger.info 'Configuration loaded.'
     @@configuration = Configuration.get
     cycle
   end
@@ -34,19 +35,20 @@ module Local
   CA_NAME = 'ca'
 
   def self.cycle
+    LocalLogger.info 'Object initialization started.'
     ca_man = CertificateManager.new(directory_path(CA_NAME), CA_NAME, @@configuration[:ca_configuration])
     ca_paths = { key: ca_man.private_key, crt: ca_man.certificate }
     certificate_managers = @@configuration[:certificate_configurations].map do |element|
       expanded_cn = expand_cn(element[:common_name])
       CertificateManager.new(directory_path(expanded_cn), expanded_cn, element, ca_paths)
     end
+    LocalLogger.info 'Objects initialized.'
 
-    # TODO: add logger messages
     loop do
+      LocalLogger.info 'Validating certificates...'
       ca_man.check_certificate
-      # TODO: use check_mode
       certificate_managers.each(&:check_certificate)
-      # TODO: fix `Interrupt` error in ctrl-c
+      LocalLogger.info 'Certificates checked, going to sleep...'
       sleep @@configuration[:sleep_time].seconds
     end
   end
