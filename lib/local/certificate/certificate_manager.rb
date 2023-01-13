@@ -140,9 +140,10 @@ class CertificateManager
   end
 
   def add_subject_alt_name(ext_option, config_option)
-    san_string = 'subjectAltName=' \
+    san_string = 'subjectAltName="' \
                  "DNS:#{@certificate_configuration[:common_name]}," \
-                 "DNS:www.#{@certificate_configuration[:common_name]}"
+                 "DNS:www.#{@certificate_configuration[:common_name]}" \
+                 '"'
     "-#{ext_option} SAN -#{config_option} <(cat /etc/ssl/openssl.cnf <(printf '\n[SAN]\n#{san_string}'))"
   end
 
