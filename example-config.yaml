@@ -1,0 +1,41 @@
+# Base folder of the certificate data.
+base_folder: ./test-data
+# Whether or not to create folders for each certificate configuration.
+use_subfolders: yes
+# The amount of time the daemon will sleep between checks.
+sleep_time: 10 minutes
+ca_configuration:
+  # Time of validity of the CA certificate.
+  valid_for: 365 days
+  # ISO 3166-1 alpha-2 country code.
+  country_code: AA
+  # The state/province where the CA resides.
+  state: None
+  # The locality where the CA resides.
+  locality: None
+  # The name of the CA organization. It will be used by the browser if you add the trust.
+  organization_name: LoCAl
+  # The unit name inside the organization.
+  organizational_unit_name: MyServer
+  # The common name of the CA. It can be a DNS name or any other string. The former is suggested, or a single-word string.
+  common_name: ca.lab.local
+  # The email of the responsible of the CA.
+  email: foo.bar@example.org
+certificate_configurations:
+    # Validity of the certificate.
+  - valid_for: 30 days
+    # Same as CA.
+    country_code: AA
+    # Same as CA.
+    state: None
+    # Same as CA.
+    locality: None
+    # Same as CA.
+    organization_name: MyHomelab
+    # Same as CA.
+    organizational_unit_name: MyService
+    # The address of the service. It must be a DNS-compatible name. It can start with '*'.
+    common_name: service.lab.local
+    # The email of the responsible of the services which use the certificate.
+    email: alex.speranza@studio.unibo.it
+# - ...
