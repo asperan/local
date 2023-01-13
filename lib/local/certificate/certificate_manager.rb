@@ -93,7 +93,11 @@ class CertificateManager
               "/OU=#{@certificate_configuration[:organizational_unit_name]}" \
               "/CN=#{@certificate_configuration[:common_name]}" \
               "/emailAddress=#{@certificate_configuration[:email]}"
-    command_string = "openssl req -new -key '#{private_key}' -out '#{csr}' -subj '#{subject}'"
+    command_string = 'openssl req -new ' \
+                     "-key '#{private_key}' " \
+                     "-out '#{csr}' " \
+                     "-subj '#{subject}' " \
+                     "#{@ca_paths.nil? ? '' : add_subject_alt_name('reqexts', 'config')} "
     exec_system_command(
       command_string,
       "Signing request '#{csr}' generated.",
@@ -119,7 +123,9 @@ class CertificateManager
     command_string = 'openssl x509 -req ' \
                      "-days '#{@certificate_configuration[:valid_for]}' " \
                      "-in '#{csr}' #{sign_options} " \
-                     "-out '#{certificate}'"
+                     "-out '#{certificate}' " \
+                     "#{@ca_paths.nil? ? '' : add_subject_alt_name('extensions', 'extfile')} " \
+                     '2> /dev/null'
     exec_system_command(
       command_string,
       "Certificate '#{certificate}' renewed.",
@@ -131,6 +137,13 @@ class CertificateManager
     LocalLogger.info 'Cleaning the old Certificate Signing Request'
     FileUtils.rm_f(csr)
     LocalLogger.info 'Old CSR removed'
+  end
+
+  def add_subject_alt_name(ext_option, config_option)
+    san_string = 'subjectAltName=' \
+                 "DNS:#{@certificate_configuration[:common_name]}," \
+                 "DNS:www.#{@certificate_configuration[:common_name]}"
+    "-#{ext_option} SAN -#{config_option} <(cat /etc/ssl/openssl.cnf <(printf '\n[SAN]\n#{san_string}'))"
   end
 
   # Exec a command with `system`. Prints `ok_message` when the command is executed correctly;
