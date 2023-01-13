@@ -37,7 +37,6 @@ module Configuration
     base_folder: '/data',
     use_subfolders: true,
     sleep_time: DEFAULT_SLEEP_DURATION,
-    check_mode: CheckMode::SERIAL,
     ca_configuration: {},
     certificate_configurations: [],
   }
@@ -82,14 +81,6 @@ module Configuration
       @extractors = {
         identity: ->(v) { v },
         duration: ->(s) { Duration.from(s) },
-        check_mode: lambda do |s|
-          case s
-          when 'serial'
-            CheckMode::SERIAL
-          when 'parallel'
-            CheckMode::PARALLEL
-          end
-        end,
         certificate_validity: lambda do |s|
           result = accept_validity s
           result[1].to_i unless result.nil?
@@ -102,7 +93,6 @@ module Configuration
         always_accept: ->(_) { true },
         not_nil: ->(v) { !v.nil? },
         boolean: ->(v) { [true, false].include? v },
-        check_mode: ->(v) { CheckMode.constants.map { |element| CheckMode.const_get(element) }.include? v },
         email: ->(email) { accept_email? email },
       }.freeze
 
@@ -121,11 +111,6 @@ module Configuration
           field_name: :sleep_time,
           extractor: @extractors[:duration],
           check: @checks[:not_nil],
-        },
-        {
-          field_name: :check_mode,
-          extractor: @extractors[:check_mode],
-          check: @checks[:check_mode],
         },
         {
           field_name: :ca_configuration,
