@@ -50,7 +50,11 @@ module Local
       certificate_managers.each(&:check_certificate)
       LocalLogger.info 'Certificates checked, going to sleep...'
       sleep @@configuration[:sleep_time].seconds
+    rescue Interrupt
+      raise StopIteration
     end
+
+    LocalLogger.info 'Program Interrupted.'
   end
 
   def self.directory_path(expanded_cn)
