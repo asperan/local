@@ -36,6 +36,10 @@ module Local
   CA_NAME = 'ca'
 
   def self.cycle
+    if @@configuration[:ca_configuration].empty?
+      LocalLogger.warning 'No CA configuration given. Exiting...'
+      return
+    end
     LocalLogger.info 'Object initialization started.'
     ca_man = CertificateManager.new(directory_path(CA_NAME), CA_NAME, @@configuration[:ca_configuration])
     ca_paths = { key: ca_man.private_key, crt: ca_man.certificate }
