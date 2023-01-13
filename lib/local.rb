@@ -26,6 +26,7 @@ module Local
   class Error < StandardError; end
 
   def self.main
+    LocalLogger.info 'Daemon started.'
     Configuration.load
     LocalLogger.info 'Configuration loaded.'
     @@configuration = Configuration.get
