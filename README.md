@@ -18,9 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # Local
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/local.rb`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+LoCAl is a daemon which acts as a local Certificate Authority. It can have a self-signed certificate and can issue certificates.
 
 ## Installation
 
@@ -34,9 +32,21 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
+Run `exe/local` to start the program.
+
+### Configuration
+#### ENV
+The available ENV variables are:
+| Name | Type | Default value | Description |
+|---|---|---|---|
+| CONFIG_FILE | string (path) |  | The path of the config file. |
+| LOG_FILE_PATH | string (path) | `./local.log` | The path of the log file. |
+
+#### Configuration file
+An example configuration file can be found [in the repository](example-config.yaml).
 
 ## Development
+This repository contains a `.ruby_version` file for [rbenv](https://github.com/rbenv/rbenv). To avoid errors due to a different Ruby version, I encourage you to use `rbenv` and, if necessary, install the version defined in `.ruby_version`.
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
@@ -45,6 +55,14 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/asperan/local.
+
+## References
+These are the main sites where I got the knowledge:
+- https://myhomelab.gr/linux/2019/12/13/local-ca-setup.html
+- https://www.golinuxcloud.com/renew-self-signed-certificate-openssl/
+- https://stackoverflow.com/questions/60644617/curl-says-requested-domain-name-does-not-match-the-servers-certificate-but-i
+- https://stackoverflow.com/questions/6194236/openssl-certificate-version-3-with-subject-alternative-name
+- https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
 
 ## License
 
