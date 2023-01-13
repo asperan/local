@@ -26,8 +26,9 @@ class CertificateManager
   # ca_paths, if not nil, must be an hash with 2 symbols: `key` and `crt`.
   # If ca_paths is nil, assume the certificate is self-signed.
   def initialize(directory_path, name, certificate_configuration, ca_paths = nil)
-    FileUtils.mkdir_p directory_path
-    @base_name = File.expand_path("#{directory_path}/#{name}")
+    expanded_directory_path = File.expand_path(directory_path)
+    FileUtils.mkdir_p expanded_directory_path
+    @base_name = "#{expanded_directory_path}/#{name}"
     @certificate_configuration = certificate_configuration
     @ca_paths = ca_paths
   end
