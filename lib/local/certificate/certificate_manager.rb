@@ -155,6 +155,7 @@ class CertificateManager
       LocalLogger.info ok_message
     when false
       LocalLogger.error ko_message
+      LocalLogger.error "Command '#{command}' failed."
       exit 1
     when nil
       LocalLogger.error "Cannot run command '#{command}'."
