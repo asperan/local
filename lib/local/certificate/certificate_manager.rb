@@ -59,6 +59,8 @@ class CertificateManager
 
   def ca_sign_options = "-CA #{@ca_paths[:crt]} -CAkey #{@ca_paths[:key]} -CAcreateserial"
 
+  def config_file ="#{@base_name}.cnf"
+
   def key_exist?
     File.exist?(private_key)
   end
@@ -134,9 +136,10 @@ class CertificateManager
   end
 
   def delete_certificate_signing_request
-    LocalLogger.info 'Cleaning the old Certificate Signing Request'
+    LocalLogger.info 'Cleaning temp files...'
     FileUtils.rm_f(csr)
-    LocalLogger.info 'Old CSR removed'
+    FileUtils.rm_f(config_file)
+    LocalLogger.info 'Temp files removed.'
   end
 
   def add_subject_alt_name(ext_option, config_option)
@@ -144,7 +147,10 @@ class CertificateManager
                  "DNS:#{@certificate_configuration[:common_name]}," \
                  "DNS:www.#{@certificate_configuration[:common_name]}" \
                  '"'
-    "-#{ext_option} SAN -#{config_option} <(cat /etc/ssl/openssl.cnf <(printf '\n[SAN]\n#{san_string}'))"
+    File.open(config_file, File::CREAT | File::TRUNC | File::WRONLY) do |file|
+      file.write(`cat /etc/ssl/openssl.cnf`, "\n[SAN]\n#{san_string}")
+    end
+    "-#{ext_option} SAN -#{config_option} #{config_file}"
   end
 
   # Exec a command with `system`. Prints `ok_message` when the command is executed correctly;
