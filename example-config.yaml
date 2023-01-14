@@ -1,5 +1,5 @@
 # Base folder of the certificate data.
-base_folder: ./test-data
+base_folder: /data
 # Whether or not to create folders for each certificate configuration.
 use_subfolders: yes
 # The amount of time the daemon will sleep between checks.
