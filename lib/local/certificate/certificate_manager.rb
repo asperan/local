@@ -34,6 +34,7 @@ class CertificateManager
   end
 
   def check_certificate
+    LocalLogger.info "Checking certificate #{certificate}..."
     generate_key unless key_exist?
     if certificate_valid?
       LocalLogger.info "Certificate '#{certificate}' is still valid. Nothing to be done."
@@ -66,7 +67,6 @@ class CertificateManager
   end
 
   def generate_key
-    LocalLogger.info 'Generating private key'
     command_string = "openssl genrsa -out #{private_key} 4096 2> /dev/null"
     exec_system_command(
       command_string,
