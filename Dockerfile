@@ -15,18 +15,42 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ARG RUBY_VERSION
-FROM ruby:${RUBY_VERSION}-slim
+FROM ruby:${RUBY_VERSION}-slim AS build
 
-RUN apt-get update
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends make gcc git \
+ && apt-get autoclean \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y make gcc
+RUN gem install gem-compiler
 
-RUN mkdir -p /app
+RUN mkdir -p /native-gems
+
+RUN git clone --branch "v2.6.3" --single-branch "https://github.com/flori/json.git" /native-gems/json
+WORKDIR /native-gems/json
+RUN gem build json.gemspec \
+ && gem compile json-2.6.3.gem
+
+RUN git clone --branch "v3.0.4" --single-branch "https://github.com/ruby/stringio.git" /native-gems/stringio
+WORKDIR /native-gems/stringio
+RUN gem build stringio.gemspec \
+ && gem compile stringio-3.0.4.gem
+
+RUN git clone --branch "v5.0.1" --single-branch "https://github.com/ruby/psych.git" /native-gems/psych
+WORKDIR /native-gems/psych
+RUN gem build psych.gemspec \
+ && gem compile psych-5.0.1.gem
+
+FROM ruby:${RUBY_VERSION}-slim AS app
+# RUN export PLATFORM="-$(uname -m)-$(uname -s | tr 'A-Z' 'a-z')"
+
+COPY ./ /app
+COPY --from=build /native-gems/json/json-2.6.3-x86_64-linux.gem /app/vendor/cache/
+COPY --from=build /native-gems/stringio/stringio-3.0.4-x86_64-linux.gem /app/vendor/cache/
+COPY --from=build /native-gems/psych/psych-5.0.1-x86_64-linux.gem /app/vendor/cache/
 
 WORKDIR /app
 
-COPY ./ /app
-
-RUN ./exe/bundle install
+RUN bundle install --prefer-local
 
 CMD [ "./exe/local" ]
